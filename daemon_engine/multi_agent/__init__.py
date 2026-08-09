@@ -29,6 +29,15 @@ from daemon_engine.multi_agent.team_protocol import (
     ProtocolStatus,
     new_request_id,
 )
+from daemon_engine.multi_agent.channels import (
+    Channel,
+    ChannelManager,
+    ChannelRunPolicy,
+    InboundMessage,
+    InboundMessageType,
+    OutboundMessage,
+    ResolvedAttachment,
+)
 
 __all__ = [
     "Orchestrator",
@@ -55,4 +64,11 @@ __all__ = [
     "SubagentManager",
     "SubagentResult",
     "SubagentStatus",
+    "Channel",
+    "ChannelManager",
+    "ChannelRunPolicy",
+    "InboundMessage",
+    "InboundMessageType",
+    "OutboundMessage",
+    "ResolvedAttachment",
 ]
