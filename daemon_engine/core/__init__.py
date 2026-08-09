@@ -9,6 +9,7 @@ from daemon_engine.core.message_manager import MessageManager, Message, MessageR
 from daemon_engine.core.security import SecurityManager, SecurityCheckResult, build_sandbox_env, check_command_safety, sanitize_output
 from daemon_engine.core.context_compact import ContextCompactor, auto_compact, snip_compact, micro_compact, compact_history
 from daemon_engine.core.error_recovery import ErrorRecoveryManager, RecoveryResult, RecoveryAction, ErrorType, with_retry
+from daemon_engine.core.task_graph import TaskGraph, GraphTask, TaskStatus as GraphTaskStatus
 
 __all__ = [
     "Agent",
@@ -42,4 +43,7 @@ __all__ = [
     "RecoveryAction",
     "ErrorType",
     "with_retry",
+    "TaskGraph",
+    "GraphTask",
+    "GraphTaskStatus",
 ]
