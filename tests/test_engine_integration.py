@@ -84,13 +84,14 @@ class TestDaemonEngineTools:
 class TestDaemonEngineRuntime:
     def test_execute_code(self, engine):
         result = engine.execute_code("print('engine code execution')")
-        assert result.result is not None
-        assert result.result.success is True
+        assert result.success is True
+        assert "engine code execution" in result.stdout
 
     def test_execute_command(self, engine):
         result = engine.execute_command("echo 'engine command'")
         assert result.result is not None
         assert result.result.success is True
+        assert "engine command" in result.result.stdout
 
 
 class TestDaemonEngineMemory:

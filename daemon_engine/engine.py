@@ -1,7 +1,8 @@
 """Daemon Engine: the main entry point that connects all subsystems.
 
 This module wires together the core engine, multi-agent system, memory,
-tools, runtime, and model integration into a single functional AI engine.
+skills, knowledge, tools, runtime, models, and infrastructure into a
+single functional AI engine.
 """
 
 from __future__ import annotations
@@ -14,17 +15,26 @@ from daemon_engine.core.agent_engine import Agent, AgentConfig, AgentEngine, Age
 from daemon_engine.core.decision_system import DecisionSystem, DecisionStrategy
 from daemon_engine.core.reasoning_engine import ReasoningEngine, ReasoningStrategy
 from daemon_engine.core.task_planner import Task, TaskPlanner, TaskPriority, TaskStatus
+from daemon_engine.infrastructure.deployment_manager import DeploymentManager, DeployConfig, DeployTarget
+from daemon_engine.infrastructure.docker_manager import DockerManager
+from daemon_engine.knowledge.algorithm_patterns import AlgorithmPatternLibrary
+from daemon_engine.knowledge.devops_knowledge import DevOpsKnowledgeBase
+from daemon_engine.knowledge.knowledge_base import KnowledgeBase
 from daemon_engine.memory.unified import UnifiedMemory
 from daemon_engine.models.base import BaseLLM, LLMConfig, get_default_llm
 from daemon_engine.multi_agent.agent_manager import AgentManager
 from daemon_engine.multi_agent.communication_system import CommunicationSystem
 from daemon_engine.multi_agent.orchestrator import Orchestrator, Workflow
+from daemon_engine.runtime.code_execution.executor import CodeExecutor
+from daemon_engine.runtime.firecracker import FirecrackerManager
 from daemon_engine.runtime.sandbox import Sandbox, SandboxConfig
 from daemon_engine.runtime.virtual_computer_engine import VirtualComputerEngine
+from daemon_engine.skills.skill_registry import SkillRegistry
 from daemon_engine.tools.automation_tools import AutomationTools
 from daemon_engine.tools.browser_tools import BrowserTools
 from daemon_engine.tools.devops_tools import DevOpsTools
 from daemon_engine.tools.research_tools import ResearchTools
+from daemon_engine.tools.scraping_tools import ScrapingTools
 from daemon_engine.tools.tool_registry import ToolRegistry
 
 logger = logging.getLogger(__name__)
@@ -33,9 +43,9 @@ logger = logging.getLogger(__name__)
 class DaemonEngine:
     """The unified agentic AI engine.
 
-    A single object that ties together agents, reasoning, memory, tools,
-    runtime, and multi-agent orchestration. This is the top-level interface
-    for building and running agentic workflows.
+    A single object that ties together agents, reasoning, memory, skills,
+    knowledge, tools, runtime, infrastructure, and multi-agent orchestration.
+    This is the top-level interface for building and running agentic workflows.
     """
 
     def __init__(
@@ -44,6 +54,9 @@ class DaemonEngine:
         memory_path: str | Path | None = None,
         workdir: str | Path | None = None,
         config: dict[str, Any] | None = None,
+        enable_firecracker: bool = False,
+        enable_docker: bool = True,
+        skills_paths: list[str | Path] | None = None,
     ) -> None:
         self.config = config or {}
         self.llm = llm or get_default_llm()
@@ -63,9 +76,24 @@ class DaemonEngine:
         self.task_planner = TaskPlanner(llm=self.llm)
         self.reasoning_engine = ReasoningEngine(llm=self.llm)
         self.decision_system = DecisionSystem(llm=self.llm)
+        self.knowledge_base = KnowledgeBase(storage_path=memory_path)
+        self.algorithm_patterns = AlgorithmPatternLibrary(knowledge_base=self.knowledge_base)
+        self.algorithm_patterns.load_patterns()
+        self.devops_knowledge = DevOpsKnowledgeBase(knowledge_base=self.knowledge_base)
+        self.devops_knowledge.load_knowledge()
+        self.skill_registry = SkillRegistry()
+        if skills_paths:
+            for path in skills_paths:
+                self.skill_registry.add_path(path)
+        else:
+            self.skill_registry.discover()
         sandbox_config = SandboxConfig(workdir=workdir) if workdir else SandboxConfig()
         self.sandbox = Sandbox(config=sandbox_config)
         self.virtual_computer = VirtualComputerEngine(config=sandbox_config)
+        self.code_executor = CodeExecutor(base_workdir=workdir)
+        self.firecracker = FirecrackerManager() if enable_firecracker else None
+        self.docker = DockerManager() if enable_docker else None
+        self.deployment_manager = DeploymentManager()
         self.orchestrator = Orchestrator(
             llm=self.llm,
             agent_manager=self.agent_manager,
@@ -75,11 +103,18 @@ class DaemonEngine:
             tool_registry=self.tool_registry,
             memory=self.memory,
         )
-        logger.info("DaemonEngine initialized — LLM=%s, tools=%d", self.llm.model_name, len(self.tool_registry.list_tools()))
+        logger.info(
+            "DaemonEngine initialized — LLM=%s, tools=%d, skills=%d, knowledge=%d",
+            self.llm.model_name,
+            len(self.tool_registry.list_tools()),
+            self.skill_registry.stats()["total_skills"],
+            self.knowledge_base.stats()["total_entries"],
+        )
 
     def _register_default_tools(self, workdir: str | Path | None = None) -> None:
         BrowserTools().register_all(self.tool_registry)
         ResearchTools().register_all(self.tool_registry)
+        ScrapingTools().register_all(self.tool_registry)
         DevOpsTools(workdir=workdir).register_all(self.tool_registry)
         AutomationTools().register_all(self.tool_registry)
 
@@ -105,8 +140,8 @@ class DaemonEngine:
             return self.agent_manager.spawn_agent(role=role)
         return self.agent_engine.create_agent(config=config)
 
-    def execute_code(self, code: str, timeout: int | None = None) -> Any:
-        return self.virtual_computer.execute_code(code, timeout=timeout)
+    def execute_code(self, code: str, language: str = "python", timeout: int = 30) -> Any:
+        return self.code_executor.execute(code, language=language, timeout=timeout)
 
     def execute_command(self, command: str, timeout: int | None = None) -> Any:
         return self.virtual_computer.execute(command, timeout=timeout)
@@ -120,11 +155,38 @@ class DaemonEngine:
     def recall(self, query: str, limit: int = 5) -> str:
         return self.memory.recall(query, limit=limit)
 
+    def search_knowledge(self, query: str, limit: int = 5) -> list[str]:
+        results = self.knowledge_base.search(query, limit=limit)
+        return [f"{entry.title}: {entry.content[:200]}" for _, entry in results]
+
+    def activate_skill(self, name: str) -> bool:
+        return self.skill_registry.activate(name)
+
+    def get_skill_context(self, names: list[str] | None = None) -> str:
+        return self.skill_registry.get_context(names)
+
+    def search_skills(self, query: str) -> list[str]:
+        skills = self.skill_registry.search(query)
+        return [f"{s.name}: {s.description[:100]}" for s in skills]
+
+    def create_vm(self, vcpus: int = 2, mem_mib: int = 512) -> Any:
+        if not self.firecracker:
+            raise RuntimeError("Firecracker not enabled. Set enable_firecracker=True.")
+        vm = self.firecracker.create_vm(vcpus=vcpus, mem_mib=mem_mib)
+        vm.start()
+        return vm
+
+    def deploy(self, project_path: str, target: str = "local", **kwargs: Any) -> Any:
+        deploy_target = DeployTarget(target) if isinstance(target, str) else target
+        config = DeployConfig(project_path=project_path, target=deploy_target, **kwargs)
+        return self.deployment_manager.deploy(config)
+
     def save_state(self) -> None:
         self.memory.save_all()
+        self.knowledge_base.save()
 
     def system_status(self) -> dict[str, Any]:
-        return {
+        status: dict[str, Any] = {
             "llm_model": self.llm.model_name,
             "tools_available": self.tool_registry.list_tools(),
             "tool_count": len(self.tool_registry.list_tools()),
@@ -133,10 +195,22 @@ class DaemonEngine:
             "virtual_computer": self.virtual_computer.system_info(),
             "workflows": len(self.orchestrator.list_workflows()),
             "tasks": len(self.task_planner.all_tasks()),
+            "knowledge": self.knowledge_base.stats(),
+            "skills": self.skill_registry.stats(),
+            "code_executor": self.code_executor.info(),
+            "deployments": self.deployment_manager.stats(),
         }
+        if self.firecracker:
+            status["firecracker"] = self.firecracker.stats()
+        if self.docker:
+            status["docker"] = self.docker.stats()
+        return status
 
     def shutdown(self) -> None:
         self.save_state()
         self.agent_manager.terminate_all()
         self.virtual_computer.shutdown()
+        self.code_executor.cleanup()
+        if self.firecracker:
+            self.firecracker.shutdown_all()
         logger.info("DaemonEngine shut down cleanly")

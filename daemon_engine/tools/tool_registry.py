@@ -1,7 +1,8 @@
 """Tool Registry: unified registry and dispatch for all agent tools.
 
-Inspired by DeerFlow's tool search/builtins system and LangChain's BaseTool.
-Provides registration, discovery, and execution with safety checks.
+Integrates DeerFlow's tool system, browser-use's Registry pattern, and
+LangChain's BaseTool abstraction. Provides registration, discovery,
+and execution with safety checks.
 """
 
 from __future__ import annotations
