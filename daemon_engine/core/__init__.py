@@ -10,6 +10,19 @@ from daemon_engine.core.security import SecurityManager, SecurityCheckResult, bu
 from daemon_engine.core.context_compact import ContextCompactor, auto_compact, snip_compact, micro_compact, compact_history
 from daemon_engine.core.error_recovery import ErrorRecoveryManager, RecoveryResult, RecoveryAction, ErrorType, with_retry
 from daemon_engine.core.task_graph import TaskGraph, GraphTask, TaskStatus as GraphTaskStatus
+from daemon_engine.core.guardrails import (
+    GuardrailMiddleware,
+    GuardrailProvider,
+    GuardrailRequest,
+    GuardrailDecision,
+    GuardrailReason,
+    GuardrailResult,
+    AllowlistProvider,
+    RateLimitProvider,
+    InputValidationProvider,
+    SubagentRestrictionProvider,
+    create_default_guardrails,
+)
 
 __all__ = [
     "Agent",
@@ -46,4 +59,15 @@ __all__ = [
     "TaskGraph",
     "GraphTask",
     "GraphTaskStatus",
+    "GuardrailMiddleware",
+    "GuardrailProvider",
+    "GuardrailRequest",
+    "GuardrailDecision",
+    "GuardrailReason",
+    "GuardrailResult",
+    "AllowlistProvider",
+    "RateLimitProvider",
+    "InputValidationProvider",
+    "SubagentRestrictionProvider",
+    "create_default_guardrails",
 ]

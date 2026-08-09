@@ -14,6 +14,7 @@ from typing import Any
 from daemon_engine.core.agent_engine import Agent, AgentConfig, AgentEngine, AgentResult
 from daemon_engine.core.decision_system import DecisionSystem, DecisionStrategy
 from daemon_engine.core.hooks import HookRegistry, HookEvent, create_default_registry
+from daemon_engine.core.guardrails import GuardrailMiddleware, create_default_guardrails
 from daemon_engine.core.message_manager import MessageManager, MessageRole
 from daemon_engine.core.reasoning_engine import ReasoningEngine, ReasoningStrategy
 from daemon_engine.core.security import SecurityManager
@@ -70,6 +71,7 @@ class DaemonEngine:
         self._register_default_tools(workdir)
         self.hooks = create_default_registry()
         self.security = SecurityManager()
+        self.guardrails = create_default_guardrails()
         self.subagent_manager = SubagentManager(
             tool_registry=self.tool_registry,
             hooks=self.hooks,
@@ -224,6 +226,21 @@ class DaemonEngine:
     def list_subagent_configs(self) -> list[dict[str, Any]]:
         return self.subagent_manager.list_configs()
 
+    def check_tool_call(
+        self,
+        tool_name: str,
+        tool_input: dict[str, Any] | None = None,
+        agent_id: str | None = None,
+        is_subagent: bool = False,
+    ) -> tuple[bool, str]:
+        """Check if a tool call is allowed by guardrails."""
+        return self.guardrails.check_tool_call(
+            tool_name=tool_name,
+            tool_input=tool_input or {},
+            agent_id=agent_id,
+            is_subagent=is_subagent,
+        )
+
     def register_hook(self, event: str, callback: Any) -> None:
         hook_event = HookEvent(event) if isinstance(event, str) else event
         self.hooks.register(hook_event, callback)
@@ -253,6 +270,7 @@ class DaemonEngine:
             "swarms": self.swarm_manager.stats(),
             "subagents": self.subagent_manager.stats(),
             "security": self.security.stats(),
+            "guardrails": self.guardrails.stats(),
         }
         if self.firecracker:
             status["firecracker"] = self.firecracker.stats()
