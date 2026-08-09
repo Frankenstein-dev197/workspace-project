@@ -15,6 +15,7 @@ from daemon_engine.core.watchdog import Watchdog, ActionRecord, LoopDetection, L
 from daemon_engine.core.background_tasks import BackgroundTaskManager, BackgroundTask, TaskStatus as BgTaskStatus
 from daemon_engine.core.system_prompt import SystemPromptBuilder, SkillRegistry, SkillEntry, create_prompt_builder
 from daemon_engine.core.skill_catalog import SkillCatalog, build_catalog
+from daemon_engine.core.dedupe_store import MemoryDedupeStore, DedupeStore, make_dedupe_key
 from daemon_engine.core.guardrails import (
     GuardrailMiddleware,
     GuardrailProvider,
@@ -93,4 +94,7 @@ __all__ = [
     "create_prompt_builder",
     "SkillCatalog",
     "build_catalog",
+    "MemoryDedupeStore",
+    "DedupeStore",
+    "make_dedupe_key",
 ]
