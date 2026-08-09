@@ -12,6 +12,7 @@ from daemon_engine.tools.research_tools import ResearchTools
 from daemon_engine.tools.scraping_tools import ScrapingTools, Spider, Selector, ScrapedItem
 from daemon_engine.tools.devops_tools import DevOpsTools
 from daemon_engine.tools.automation_tools import AutomationTools
+from daemon_engine.tools.auto_throttle import AutoThrottle, parse_retry_after, DomainStats
 
 __all__ = [
     "ToolRegistry",
@@ -25,4 +26,7 @@ __all__ = [
     "ScrapedItem",
     "DevOpsTools",
     "AutomationTools",
+    "AutoThrottle",
+    "parse_retry_after",
+    "DomainStats",
 ]
