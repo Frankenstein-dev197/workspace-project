@@ -14,6 +14,13 @@ from daemon_engine.multi_agent.swarm import (
     ConsensusMechanism,
     FailureHandling,
 )
+from daemon_engine.multi_agent.subagent import (
+    Subagent,
+    SubagentConfig,
+    SubagentManager,
+    SubagentResult,
+    SubagentStatus,
+)
 
 __all__ = [
     "Orchestrator",
@@ -29,4 +36,9 @@ __all__ = [
     "SwarmAgentStatus",
     "ConsensusMechanism",
     "FailureHandling",
+    "Subagent",
+    "SubagentConfig",
+    "SubagentManager",
+    "SubagentResult",
+    "SubagentStatus",
 ]

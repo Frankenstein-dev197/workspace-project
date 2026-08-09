@@ -28,6 +28,7 @@ from daemon_engine.models.base import BaseLLM, LLMConfig, get_default_llm
 from daemon_engine.multi_agent.agent_manager import AgentManager
 from daemon_engine.multi_agent.communication_system import CommunicationSystem
 from daemon_engine.multi_agent.orchestrator import Orchestrator, Workflow
+from daemon_engine.multi_agent.subagent import SubagentManager
 from daemon_engine.multi_agent.swarm import Swarm, SwarmManager, SwarmConfig, SwarmTopology
 from daemon_engine.runtime.code_execution.executor import CodeExecutor
 from daemon_engine.runtime.firecracker import FirecrackerManager
@@ -69,6 +70,10 @@ class DaemonEngine:
         self._register_default_tools(workdir)
         self.hooks = create_default_registry()
         self.security = SecurityManager()
+        self.subagent_manager = SubagentManager(
+            tool_registry=self.tool_registry,
+            hooks=self.hooks,
+        )
         self.swarm_manager = SwarmManager()
         self.communication = CommunicationSystem()
         self.agent_manager = AgentManager(
@@ -203,6 +208,22 @@ class DaemonEngine:
         )
         return self.swarm_manager.create_swarm(config=config)
 
+    def spawn_subagent(
+        self,
+        task: str,
+        config_name: str = "general-purpose",
+        llm_callback: Any = None,
+    ) -> Any:
+        return self.subagent_manager.spawn(
+            task_description=task,
+            config_name=config_name,
+            parent_model=getattr(self.llm, "model", "default"),
+            llm_callback=llm_callback,
+        )
+
+    def list_subagent_configs(self) -> list[dict[str, Any]]:
+        return self.subagent_manager.list_configs()
+
     def register_hook(self, event: str, callback: Any) -> None:
         hook_event = HookEvent(event) if isinstance(event, str) else event
         self.hooks.register(hook_event, callback)
@@ -230,6 +251,7 @@ class DaemonEngine:
             "deployments": self.deployment_manager.stats(),
             "hooks": self.hooks.stats(),
             "swarms": self.swarm_manager.stats(),
+            "subagents": self.subagent_manager.stats(),
             "security": self.security.stats(),
         }
         if self.firecracker:
