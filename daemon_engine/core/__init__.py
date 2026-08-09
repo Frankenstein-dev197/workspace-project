@@ -36,6 +36,13 @@ from daemon_engine.core.guardrails import (
     SubagentRestrictionProvider,
     create_default_guardrails,
 )
+from daemon_engine.core.action_history import (
+    EpisodicActionHistory,
+    Episode,
+    AgentAction,
+    ActionResult,
+    ActionStatus,
+)
 
 __all__ = [
     "Agent",
@@ -109,4 +116,9 @@ __all__ = [
     "MCPToolDef",
     "normalize_mcp_name",
     "make_mcp_tool_name",
+    "EpisodicActionHistory",
+    "Episode",
+    "AgentAction",
+    "ActionResult",
+    "ActionStatus",
 ]
