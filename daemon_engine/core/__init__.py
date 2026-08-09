@@ -11,6 +11,7 @@ from daemon_engine.core.context_compact import ContextCompactor, auto_compact, s
 from daemon_engine.core.error_recovery import ErrorRecoveryManager, RecoveryResult, RecoveryAction, ErrorType, with_retry
 from daemon_engine.core.task_graph import TaskGraph, GraphTask, TaskStatus as GraphTaskStatus
 from daemon_engine.core.agent_brain import AgentBrain, AgentPlanner, AgentStep, PlanItem, PlanItemStatus
+from daemon_engine.core.watchdog import Watchdog, ActionRecord, LoopDetection, LoopType
 from daemon_engine.core.guardrails import (
     GuardrailMiddleware,
     GuardrailProvider,
@@ -76,4 +77,8 @@ __all__ = [
     "AgentStep",
     "PlanItem",
     "PlanItemStatus",
+    "Watchdog",
+    "ActionRecord",
+    "LoopDetection",
+    "LoopType",
 ]
