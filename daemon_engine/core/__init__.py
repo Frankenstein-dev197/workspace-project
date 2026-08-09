@@ -12,6 +12,7 @@ from daemon_engine.core.error_recovery import ErrorRecoveryManager, RecoveryResu
 from daemon_engine.core.task_graph import TaskGraph, GraphTask, TaskStatus as GraphTaskStatus
 from daemon_engine.core.agent_brain import AgentBrain, AgentPlanner, AgentStep, PlanItem, PlanItemStatus
 from daemon_engine.core.watchdog import Watchdog, ActionRecord, LoopDetection, LoopType
+from daemon_engine.core.background_tasks import BackgroundTaskManager, BackgroundTask, TaskStatus as BgTaskStatus
 from daemon_engine.core.guardrails import (
     GuardrailMiddleware,
     GuardrailProvider,
@@ -81,4 +82,7 @@ __all__ = [
     "ActionRecord",
     "LoopDetection",
     "LoopType",
+    "BackgroundTaskManager",
+    "BackgroundTask",
+    "BgTaskStatus",
 ]
