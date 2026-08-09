@@ -6,6 +6,7 @@ from daemon_engine.core.task_planner import TaskPlanner, Task, TaskStatus
 from daemon_engine.core.decision_system import DecisionSystem
 from daemon_engine.core.hooks import HookRegistry, HookEvent, HookContext, HookResult, create_default_registry
 from daemon_engine.core.message_manager import MessageManager, Message, MessageRole, CompactionSettings
+from daemon_engine.core.security import SecurityManager, SecurityCheckResult, build_sandbox_env, check_command_safety, sanitize_output
 
 __all__ = [
     "Agent",
@@ -24,4 +25,9 @@ __all__ = [
     "Message",
     "MessageRole",
     "CompactionSettings",
+    "SecurityManager",
+    "SecurityCheckResult",
+    "build_sandbox_env",
+    "check_command_safety",
+    "sanitize_output",
 ]

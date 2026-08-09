@@ -16,6 +16,7 @@ from daemon_engine.core.decision_system import DecisionSystem, DecisionStrategy
 from daemon_engine.core.hooks import HookRegistry, HookEvent, create_default_registry
 from daemon_engine.core.message_manager import MessageManager, MessageRole
 from daemon_engine.core.reasoning_engine import ReasoningEngine, ReasoningStrategy
+from daemon_engine.core.security import SecurityManager
 from daemon_engine.core.task_planner import Task, TaskPlanner, TaskPriority, TaskStatus
 from daemon_engine.infrastructure.deployment_manager import DeploymentManager, DeployConfig, DeployTarget
 from daemon_engine.infrastructure.docker_manager import DockerManager
@@ -67,6 +68,7 @@ class DaemonEngine:
         self.tool_registry = ToolRegistry()
         self._register_default_tools(workdir)
         self.hooks = create_default_registry()
+        self.security = SecurityManager()
         self.swarm_manager = SwarmManager()
         self.communication = CommunicationSystem()
         self.agent_manager = AgentManager(
@@ -228,6 +230,7 @@ class DaemonEngine:
             "deployments": self.deployment_manager.stats(),
             "hooks": self.hooks.stats(),
             "swarms": self.swarm_manager.stats(),
+            "security": self.security.stats(),
         }
         if self.firecracker:
             status["firecracker"] = self.firecracker.stats()
