@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "daemon-engine"
+version = "1.0.0"
+description = "A next-generation agentic AI engine unifying autonomous agents, reasoning, memory, tools, and runtime execution"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Frankenstein-dev197", email = "openhands@all-hands.dev"},
+]
+keywords = ["ai", "agent", "agentic", "llm", "orchestration", "autonomous", "reasoning", "memory"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+openai = ["openai>=1.0"]
+anthropic = ["anthropic>=0.18"]
+local = ["transformers>=4.40", "torch>=2.0"]
+all = [
+    "openai>=1.0",
+    "anthropic>=0.18",
+    "transformers>=4.40",
+    "torch>=2.0",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "pytest-asyncio>=0.21",
+]
+
+[project.scripts]
+daemon-engine = "daemon_engine.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["daemon_engine*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["daemon_engine"]
+omit = ["tests/*"]
