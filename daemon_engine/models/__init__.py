@@ -7,6 +7,7 @@ and a mock provider for testing.
 """
 
 from daemon_engine.models.base import BaseLLM, get_default_llm, LLMConfig
+from daemon_engine.models.llm_cache import LLMCache, ApiKind, StructuralHash, DriftReport
 from daemon_engine.models.providers import (
     OpenAIProvider,
     AnthropicProvider,
@@ -22,4 +23,8 @@ __all__ = [
     "AnthropicProvider",
     "MockProvider",
     "LocalProvider",
+    "LLMCache",
+    "ApiKind",
+    "StructuralHash",
+    "DriftReport",
 ]
