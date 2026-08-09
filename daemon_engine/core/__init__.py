@@ -8,6 +8,7 @@ from daemon_engine.core.hooks import HookRegistry, HookEvent, HookContext, HookR
 from daemon_engine.core.message_manager import MessageManager, Message, MessageRole, CompactionSettings
 from daemon_engine.core.security import SecurityManager, SecurityCheckResult, build_sandbox_env, check_command_safety, sanitize_output
 from daemon_engine.core.context_compact import ContextCompactor, auto_compact, snip_compact, micro_compact, compact_history
+from daemon_engine.core.error_recovery import ErrorRecoveryManager, RecoveryResult, RecoveryAction, ErrorType, with_retry
 
 __all__ = [
     "Agent",
@@ -36,4 +37,9 @@ __all__ = [
     "snip_compact",
     "micro_compact",
     "compact_history",
+    "ErrorRecoveryManager",
+    "RecoveryResult",
+    "RecoveryAction",
+    "ErrorType",
+    "with_retry",
 ]
