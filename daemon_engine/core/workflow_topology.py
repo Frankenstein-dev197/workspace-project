@@ -194,10 +194,16 @@ class WorkflowGraphTopology:
 
         Uses Kahn's algorithm: repeatedly remove nodes with no incoming
         edges. If not all nodes are removed, a cycle exists.
+        Edges to nonexistent nodes are ignored.
         """
         in_degree: dict[str, int] = {}
         for nid in self._node_ids:
-            in_degree[nid] = len(self._incoming.get(nid, []))
+            in_degree[nid] = 0
+
+        for nid in self._node_ids:
+            for successor in self._outgoing.get(nid, []):
+                if successor in in_degree:
+                    in_degree[successor] += 1
 
         queue: deque[str] = deque(
             nid for nid in self._node_ids if in_degree[nid] == 0
@@ -208,9 +214,10 @@ class WorkflowGraphTopology:
             node = queue.popleft()
             order.append(node)
             for successor in self._outgoing.get(node, []):
-                in_degree[successor] -= 1
-                if in_degree[successor] == 0:
-                    queue.append(successor)
+                if successor in in_degree:
+                    in_degree[successor] -= 1
+                    if in_degree[successor] == 0:
+                        queue.append(successor)
 
         if len(order) != len(self._node_ids):
             return None  # Cycle exists
