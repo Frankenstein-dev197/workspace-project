@@ -43,6 +43,19 @@ from daemon_engine.core.action_history import (
     ActionResult,
     ActionStatus,
 )
+from daemon_engine.core.workflow_topology import WorkflowGraphTopology
+from daemon_engine.core.workflow_engine import (
+    WorkflowEngine,
+    WorkflowNode,
+    NodeRunResult,
+    NodeStatus,
+)
+from daemon_engine.core.sse_events import (
+    SSEEvent,
+    SSEEventType,
+    SSEStream,
+    parse_sse_stream,
+)
 
 __all__ = [
     "Agent",
@@ -121,4 +134,13 @@ __all__ = [
     "AgentAction",
     "ActionResult",
     "ActionStatus",
+    "WorkflowGraphTopology",
+    "WorkflowEngine",
+    "WorkflowNode",
+    "NodeRunResult",
+    "NodeStatus",
+    "SSEEvent",
+    "SSEEventType",
+    "SSEStream",
+    "parse_sse_stream",
 ]
