@@ -16,6 +16,13 @@ from daemon_engine.core.background_tasks import BackgroundTaskManager, Backgroun
 from daemon_engine.core.system_prompt import SystemPromptBuilder, SkillRegistry, SkillEntry, create_prompt_builder
 from daemon_engine.core.skill_catalog import SkillCatalog, build_catalog
 from daemon_engine.core.dedupe_store import MemoryDedupeStore, DedupeStore, make_dedupe_key
+from daemon_engine.core.mcp_plugin import (
+    MCPClient,
+    MCPCatalog,
+    MCPToolDef,
+    normalize_mcp_name,
+    make_mcp_tool_name,
+)
 from daemon_engine.core.guardrails import (
     GuardrailMiddleware,
     GuardrailProvider,
@@ -97,4 +104,9 @@ __all__ = [
     "MemoryDedupeStore",
     "DedupeStore",
     "make_dedupe_key",
+    "MCPClient",
+    "MCPCatalog",
+    "MCPToolDef",
+    "normalize_mcp_name",
+    "make_mcp_tool_name",
 ]
