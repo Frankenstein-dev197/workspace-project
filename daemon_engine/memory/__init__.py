@@ -19,6 +19,13 @@ from daemon_engine.memory.recall import (
     assess_remember_write,
 )
 from daemon_engine.memory.unified import UnifiedMemory
+from daemon_engine.memory.savings_ledger import (
+    SavingsLedger,
+    SavingsEvent,
+    SavingsBucket,
+    SavingsReport,
+    estimate_cost_usd,
+)
 
 __all__ = [
     "CodeMemory",
@@ -33,4 +40,9 @@ __all__ = [
     "RecallHit",
     "RecallResult",
     "assess_remember_write",
+    "SavingsLedger",
+    "SavingsEvent",
+    "SavingsBucket",
+    "SavingsReport",
+    "estimate_cost_usd",
 ]
