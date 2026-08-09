@@ -21,12 +21,14 @@ from daemon_engine.multi_agent.subagent import (
     SubagentResult,
     SubagentStatus,
 )
+from daemon_engine.multi_agent.message_bus import MessageBus
 
 __all__ = [
     "Orchestrator",
     "AgentManager",
     "CommunicationSystem",
     "Message",
+    "MessageBus",
     "Swarm",
     "SwarmManager",
     "SwarmConfig",
