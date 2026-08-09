@@ -22,6 +22,13 @@ from daemon_engine.multi_agent.subagent import (
     SubagentStatus,
 )
 from daemon_engine.multi_agent.message_bus import MessageBus
+from daemon_engine.multi_agent.team_protocol import (
+    ProtocolManager,
+    ProtocolState,
+    ProtocolType,
+    ProtocolStatus,
+    new_request_id,
+)
 
 __all__ = [
     "Orchestrator",
@@ -29,6 +36,11 @@ __all__ = [
     "CommunicationSystem",
     "Message",
     "MessageBus",
+    "ProtocolManager",
+    "ProtocolState",
+    "ProtocolType",
+    "ProtocolStatus",
+    "new_request_id",
     "Swarm",
     "SwarmManager",
     "SwarmConfig",
