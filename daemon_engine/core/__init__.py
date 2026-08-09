@@ -43,6 +43,7 @@ from daemon_engine.core.action_history import (
     ActionResult,
     ActionStatus,
 )
+from daemon_engine.core.workflow_topology import WorkflowGraphTopology
 
 __all__ = [
     "Agent",
@@ -121,4 +122,5 @@ __all__ = [
     "AgentAction",
     "ActionResult",
     "ActionStatus",
+    "WorkflowGraphTopology",
 ]
