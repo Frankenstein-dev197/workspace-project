@@ -14,6 +14,7 @@ from daemon_engine.core.agent_brain import AgentBrain, AgentPlanner, AgentStep, 
 from daemon_engine.core.watchdog import Watchdog, ActionRecord, LoopDetection, LoopType
 from daemon_engine.core.background_tasks import BackgroundTaskManager, BackgroundTask, TaskStatus as BgTaskStatus
 from daemon_engine.core.system_prompt import SystemPromptBuilder, SkillRegistry, SkillEntry, create_prompt_builder
+from daemon_engine.core.skill_catalog import SkillCatalog, build_catalog
 from daemon_engine.core.guardrails import (
     GuardrailMiddleware,
     GuardrailProvider,
@@ -90,4 +91,6 @@ __all__ = [
     "SkillRegistry",
     "SkillEntry",
     "create_prompt_builder",
+    "SkillCatalog",
+    "build_catalog",
 ]
