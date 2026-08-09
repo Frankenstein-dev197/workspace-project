@@ -50,6 +50,12 @@ from daemon_engine.core.workflow_engine import (
     NodeRunResult,
     NodeStatus,
 )
+from daemon_engine.core.sse_events import (
+    SSEEvent,
+    SSEEventType,
+    SSEStream,
+    parse_sse_stream,
+)
 
 __all__ = [
     "Agent",
@@ -133,4 +139,8 @@ __all__ = [
     "WorkflowNode",
     "NodeRunResult",
     "NodeStatus",
+    "SSEEvent",
+    "SSEEventType",
+    "SSEStream",
+    "parse_sse_stream",
 ]
