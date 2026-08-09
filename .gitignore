@@ -63,3 +63,5 @@ Thumbs.db
 *.json
 !pyproject.json
 daemon_memory/
+.transcripts/
+.task_outputs/
