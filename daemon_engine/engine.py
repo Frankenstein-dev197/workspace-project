@@ -13,6 +13,8 @@ from typing import Any
 
 from daemon_engine.core.agent_engine import Agent, AgentConfig, AgentEngine, AgentResult
 from daemon_engine.core.decision_system import DecisionSystem, DecisionStrategy
+from daemon_engine.core.hooks import HookRegistry, HookEvent, create_default_registry
+from daemon_engine.core.message_manager import MessageManager, MessageRole
 from daemon_engine.core.reasoning_engine import ReasoningEngine, ReasoningStrategy
 from daemon_engine.core.task_planner import Task, TaskPlanner, TaskPriority, TaskStatus
 from daemon_engine.infrastructure.deployment_manager import DeploymentManager, DeployConfig, DeployTarget
@@ -25,6 +27,7 @@ from daemon_engine.models.base import BaseLLM, LLMConfig, get_default_llm
 from daemon_engine.multi_agent.agent_manager import AgentManager
 from daemon_engine.multi_agent.communication_system import CommunicationSystem
 from daemon_engine.multi_agent.orchestrator import Orchestrator, Workflow
+from daemon_engine.multi_agent.swarm import Swarm, SwarmManager, SwarmConfig, SwarmTopology
 from daemon_engine.runtime.code_execution.executor import CodeExecutor
 from daemon_engine.runtime.firecracker import FirecrackerManager
 from daemon_engine.runtime.sandbox import Sandbox, SandboxConfig
@@ -63,6 +66,8 @@ class DaemonEngine:
         self.memory = UnifiedMemory(storage_path=memory_path)
         self.tool_registry = ToolRegistry()
         self._register_default_tools(workdir)
+        self.hooks = create_default_registry()
+        self.swarm_manager = SwarmManager()
         self.communication = CommunicationSystem()
         self.agent_manager = AgentManager(
             llm=self.llm,
@@ -181,6 +186,28 @@ class DaemonEngine:
         config = DeployConfig(project_path=project_path, target=deploy_target, **kwargs)
         return self.deployment_manager.deploy(config)
 
+    def create_swarm(
+        self,
+        topology: str = "hierarchical-mesh",
+        max_agents: int = 15,
+        consensus: str = "majority",
+    ) -> Swarm:
+        topo = SwarmTopology(topology) if isinstance(topology, str) else topology
+        from daemon_engine.multi_agent.swarm import ConsensusMechanism
+        config = SwarmConfig(
+            topology=topo,
+            max_agents=max_agents,
+            consensus_mechanism=ConsensusMechanism(consensus),
+        )
+        return self.swarm_manager.create_swarm(config=config)
+
+    def register_hook(self, event: str, callback: Any) -> None:
+        hook_event = HookEvent(event) if isinstance(event, str) else event
+        self.hooks.register(hook_event, callback)
+
+    def list_hooks(self) -> dict[str, list[str]]:
+        return self.hooks.list_hooks()
+
     def save_state(self) -> None:
         self.memory.save_all()
         self.knowledge_base.save()
@@ -199,6 +226,8 @@ class DaemonEngine:
             "skills": self.skill_registry.stats(),
             "code_executor": self.code_executor.info(),
             "deployments": self.deployment_manager.stats(),
+            "hooks": self.hooks.stats(),
+            "swarms": self.swarm_manager.stats(),
         }
         if self.firecracker:
             status["firecracker"] = self.firecracker.stats()
