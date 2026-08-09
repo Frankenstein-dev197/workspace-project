@@ -13,6 +13,13 @@ from daemon_engine.tools.scraping_tools import ScrapingTools, Spider, Selector, 
 from daemon_engine.tools.devops_tools import DevOpsTools
 from daemon_engine.tools.automation_tools import AutomationTools
 from daemon_engine.tools.auto_throttle import AutoThrottle, parse_retry_after, DomainStats
+from daemon_engine.tools.priority_scheduler import (
+    PriorityScheduler,
+    ScheduledRequest,
+    CheckpointData,
+    canonicalize_url,
+    fingerprint_url,
+)
 
 __all__ = [
     "ToolRegistry",
@@ -29,4 +36,9 @@ __all__ = [
     "AutoThrottle",
     "parse_retry_after",
     "DomainStats",
+    "PriorityScheduler",
+    "ScheduledRequest",
+    "CheckpointData",
+    "canonicalize_url",
+    "fingerprint_url",
 ]
