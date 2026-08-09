@@ -17,6 +17,14 @@ from daemon_engine.runtime.file_operation_lock import (
     active_lock_count,
     clear_locks,
 )
+from daemon_engine.runtime.sandbox_security import (
+    SecurityGate,
+    SandboxSecurityConfig,
+    SecurityResult,
+    SecurityDecision,
+    is_host_bash_allowed,
+    uses_local_sandbox_provider,
+)
 
 __all__ = [
     "Sandbox",
@@ -36,4 +44,10 @@ __all__ = [
     "acquire_file_operation_lock",
     "active_lock_count",
     "clear_locks",
+    "SecurityGate",
+    "SandboxSecurityConfig",
+    "SecurityResult",
+    "SecurityDecision",
+    "is_host_bash_allowed",
+    "uses_local_sandbox_provider",
 ]
